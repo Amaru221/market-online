@@ -2,7 +2,7 @@
 /backend/.env.local.php
 /backend/.env.*.local
 /backend/config/secrets/prod/prod.decrypt.private.php
-/public/bundles/
+/backend/public/bundles/
 /backend/var/
 /backend/vendor/
 /frontend/node_modules/
