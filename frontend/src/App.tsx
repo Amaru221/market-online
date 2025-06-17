@@ -12,9 +12,9 @@ function App() {
   const [products, setProducts] = useState<Product[]>([])
 
   useEffect(() => {
-    fetch('/api/products')
+    fetch('https://localhost:8000/api/products')
       .then(res => res.json())
-      .then(data => setProducts(data['hydra:member'] ?? []))
+      .then(data => setProducts(data['member'] ?? []))
       .catch(err => console.error('Error fetching products:', err))
   }, [])
 
