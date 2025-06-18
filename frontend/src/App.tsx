@@ -1,35 +1,60 @@
-import { useEffect, useState } from 'react'
-
-type Product = {
-  id: number
-  name: string
-  price: number
-  stock: number
-  imageUrl?: string
-}
+import { useState, useEffect } from 'react';
+import {Login} from './Login';
+import Register from './Register';
+import { ProductList } from './ProductList';
+import './Login.css';
 
 function App() {
-  const [products, setProducts] = useState<Product[]>([])
+  const [token, setToken] = useState<string | null>(null);
+  const [showLogin, setShowLogin] = useState(true);
 
   useEffect(() => {
-    fetch('https://localhost:8000/api/products')
-      .then(res => res.json())
-      .then(data => setProducts(data['member'] ?? []))
-      .catch(err => console.error('Error fetching products:', err))
-  }, [])
+    const storedToken = localStorage.getItem('token');
+    if (storedToken) {
+      setToken(storedToken);
+    }
+  }, []);
+
+  const handleLoginSuccess = (token: string) => {
+    localStorage.setItem('token', token);
+    setToken(token);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setToken(null);
+  };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1>Lista de Productos</h1>
-      <ul>
-        {products.map(p => (
-          <li key={p.id}>
-            {p.name} - {p.price.toFixed(2)} €
-          </li>
-        ))}
-      </ul>
-    </div>
-  )
+    <>
+      {!token ? (
+        <div className="login-container">
+          <div className="login-tabs">
+            <button
+              className={showLogin ? 'active' : ''}
+              onClick={() => setShowLogin(true)}
+            >
+              Login
+            </button>
+            <button
+              className={!showLogin ? 'active' : ''}
+              onClick={() => setShowLogin(false)}
+            >
+              Register
+            </button>
+          </div>
+
+          {showLogin ? (
+            <Login onLoginSuccess={handleLoginSuccess} />
+          ) : (
+            <Register />
+          )}
+        </div>
+      ) : (
+        <ProductList token={token} onLogout={handleLogout} />
+      )}
+    </>
+  );
 }
 
-export default App
+export default App;
