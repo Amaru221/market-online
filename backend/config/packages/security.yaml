@@ -14,23 +14,28 @@ security:
         # used to reload user from session & other features (e.g. switch_user)
 
     firewalls:
-        login:
-            pattern:  ^/api/login
+        api_login:
+            pattern: ^/api/login$
             stateless: true
             json_login:
-                check_path:               /api/login
-                username_path:            email
-                password_path:            password
-                success_handler:          lexik_jwt_authentication.handler.authentication_success
-                failure_handler:          lexik_jwt_authentication.handler.authentication_failure
+                check_path: /api/login
+                username_path: email
+                password_path: password
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+        
+        api_register:
+            pattern: ^/register$
+            stateless: true
 
         api:
-            pattern:   ^/api
+            pattern: ^/api(?!/login$|/register$)  # evita login y register
             stateless: true
             jwt: ~
 
     access_control:
-        - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/register$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
 
 
