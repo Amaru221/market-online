@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import {Login} from './Login';
+import { Login } from './Login';
 import Register from './Register';
 import { ProductList } from './ProductList';
 import './Login.css';
+import TopNavBar from './TopNavBar';
 
 function App() {
   const [token, setToken] = useState<string | null>(null);
@@ -21,12 +22,15 @@ function App() {
   };
 
   const handleLogout = () => {
+    console.log('Logging out...');
     localStorage.removeItem('token');
     setToken(null);
+    setShowLogin(true);
   };
 
   return (
     <>
+      {token && <TopNavBar onLogout={handleLogout} />}
       {!token ? (
         <div className="login-container">
           <div className="login-tabs">
@@ -51,8 +55,23 @@ function App() {
           )}
         </div>
       ) : (
-        <ProductList token={token} onLogout={handleLogout} />
+        <ProductList token={token} />
       )}
+
+      {/* Footer */}
+      <footer
+        style={{
+          marginTop: '2rem',
+          padding: '1rem',
+          textAlign: 'center',
+          backgroundColor: '#f0f0f0',
+          borderTop: '1px solid #ccc',
+          fontSize: '0.9rem',
+          color: '#555',
+        }}
+      >
+        &copy; {new Date().getFullYear()} Mi Aplicación - Todos los derechos reservados
+      </footer>
     </>
   );
 }
