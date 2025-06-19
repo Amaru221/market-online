@@ -10,7 +10,6 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
-
     private UserPasswordHasherInterface $passwordHasher;
 
     public function __construct(UserPasswordHasherInterface $passwordHasher)
@@ -29,14 +28,19 @@ class AppFixtures extends Fixture
 
         $manager->persist($user);
 
-
-
-        foreach (range(1, 10) as $i) {
+        // Crea 100 productos
+        foreach (range(1, 100) as $i) {
             $product = new Product();
             $product->setName("Producto $i");
             $product->setPrice(mt_rand(10, 100));
             $product->setStock(mt_rand(0, 50));
-            $product->setImageUrl("https://via.placeholder.com/150");
+
+            // Imagen aleatoria con ID específica
+            // Picsum asegura una imagen única por ID
+            $imageId = 100 + $i; // Para evitar IDs demasiado bajos
+            $imageUrl = "https://picsum.photos/id/$imageId/300/200"; // Tamaño personalizable
+            $product->setImageUrl($imageUrl);
+
             $manager->persist($product);
         }
 

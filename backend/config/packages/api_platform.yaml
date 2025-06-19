@@ -1,8 +1,14 @@
 api_platform:
     title: Hello API Platform
     version: 1.0.0
-    defaults:
-        pagination_enable: false
+    #defaults:
+        #pagination_enable: false
         #stateless: true
         #cache_headers:
         #    vary: ['Content-Type', 'Authorization', 'Origin']
+    collection:
+        pagination:
+            enabled: true                # activar paginación
+            enabled_parameter_name: pagination   # query param para activar/desactivar paginación (ejemplo: ?pagination=false)
+            page_parameter_name: page            # query param para la página (por defecto page)
+            items_per_page_parameter_name: itemsPerPage  # query param para tamaño página
