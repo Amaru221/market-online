@@ -3,16 +3,48 @@ import ReactDOM from "react-dom";
 import styles from "./TopNavBar.module.css";
 import { Menu, Search, User } from "lucide-react";
 
+type Category = {
+  id: number;
+  name: string;
+};
+
 type Props = {
+  token: string;
   onLogout: () => void;
 };
 
-const TopNavBar: React.FC<Props> = ({ onLogout }) => {
+const TopNavBar: React.FC<Props> = ({ token, onLogout }) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
   const iconRef = useRef<HTMLButtonElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const sidebarRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ top: 0, left: 0 });
 
+  // Fetch categories from backend
+  useEffect(() => {
+    if (!token) return;
+
+    fetch("https://localhost:8000/api/categories", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        //Accept: "application/json",
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Error al obtener categorías");
+        return res.json();
+      })
+      .then((data) => {
+        console.log("Respuesta de categorías:", data); // <- importante
+        setCategories(data.member);
+
+      })
+      .catch((err) => console.error("Error fetching categories:", err));
+  }, [token]);
+
+  // Menu position logic
   useEffect(() => {
     if (menuOpen && iconRef.current) {
       const rect = iconRef.current.getBoundingClientRect();
@@ -23,6 +55,7 @@ const TopNavBar: React.FC<Props> = ({ onLogout }) => {
     }
   }, [menuOpen]);
 
+  // Close menu/sidebar on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as Node;
@@ -33,16 +66,28 @@ const TopNavBar: React.FC<Props> = ({ onLogout }) => {
       ) {
         setMenuOpen(false);
       }
+      if (
+        sidebarOpen &&
+        sidebarRef.current &&
+        !sidebarRef.current.contains(target) &&
+        !(e.target as HTMLElement).closest(`.${styles.iconButton}`)
+      ) {
+        setSidebarOpen(false);
+      }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [menuOpen]);
+  }, [menuOpen, sidebarOpen]);
 
   return (
     <>
       <header className={styles.navbar}>
         <div className={styles.leftSection}>
-          <button className={styles.iconButton}>
+          <button
+            className={styles.iconButton}
+            onClick={() => setSidebarOpen(true)}
+          >
             <Menu size={24} />
           </button>
           <h1 className={styles.logo}>MyApp</h1>
@@ -68,6 +113,7 @@ const TopNavBar: React.FC<Props> = ({ onLogout }) => {
         </div>
       </header>
 
+      {/* Dropdown user menu */}
       {menuOpen &&
         ReactDOM.createPortal(
           <div
@@ -75,14 +121,38 @@ const TopNavBar: React.FC<Props> = ({ onLogout }) => {
             ref={dropdownRef}
             style={{ top: position.top, left: position.left }}
           >
-            <button className={styles.normalButton} >
-              Mis pedidos
-            </button>
+            <button className={styles.normalButton}>Mis pedidos</button>
             <button className={styles.logoutButton} onClick={onLogout}>
               Cerrar sesión
             </button>
           </div>,
           document.getElementById("dropdown-root")!
+        )}
+
+      {/* Sidebar for categories */}
+      {sidebarOpen &&
+        ReactDOM.createPortal(
+          <div className={styles.sidebarOverlay}>
+            <div className={styles.sidebar} ref={sidebarRef}>
+              <h2 className={styles.sidebarTitle}>Categorías</h2>
+              <ul className={styles.categoryList}>
+                {categories.map((cat) => (
+                  <li key={cat.id}>
+                    <button
+                      className={styles.categoryButton}
+                      onClick={() => {
+                        console.log("Clic en categoría:", cat.name);
+                        setSidebarOpen(false);
+                      }}
+                    >
+                      {cat.name}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>,
+          document.body
         )}
     </>
   );
