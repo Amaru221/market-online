@@ -98,4 +98,52 @@
     background-color: #dc2626;
   }
   
+
+  .sidebarOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 1000;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.sidebar {
+  background-color: #fff;
+  width: 25%;
+  height: 100vh;
+  padding: 20px;
+  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
+}
+
+.sidebarTitle {
+  margin-top: 0;
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.categoryList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.categoryButton {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 8px;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.categoryButton:hover {
+  background-color: #f0f0f0;
+}
   
