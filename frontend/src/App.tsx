@@ -30,7 +30,7 @@ function App() {
 
   return (
     <>
-      {token && <TopNavBar onLogout={handleLogout} />}
+      {token && <TopNavBar token={token} onLogout={handleLogout} />}
       {!token ? (
         <div className="login-container">
           <div className="login-tabs">
